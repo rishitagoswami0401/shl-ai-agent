@@ -1,21 +1,4 @@
-import numpy as np
-from sentence_transformers import SentenceTransformer
+from app.faiss_index import search_index
 
-model = SentenceTransformer("all-MiniLM-L6-v2")
-
-def search_assessments(query, catalog, index):
-
-    query_embedding = model.encode([query])
-
-    distances, indices = index.search(
-        np.array(query_embedding).astype("float32"),
-        5
-    )
-
-    results = []
-
-    for idx in indices[0]:
-
-        results.append(catalog[idx])
-
-    return results
+def retrieve_assessments(query, index, catalog):
+    return search_index(query, index, catalog)

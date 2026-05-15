@@ -4,11 +4,17 @@ from app.retriever import search_assessments
 from app.models import ChatRequest
 from app.utils import is_vague_query
 from app.faiss_index import build_index
+from fastapi import FastAPI
+from app.catalog_loader import load_catalog
+from app.faiss_index import build_index
+from app.retriever import retrieve_assessments
+from app.models import ChatRequest
 
 app = FastAPI()
 
 # Load SHL catalog
 catalog = load_catalog()
+index = build_index(catalog)
 
 # Build FAISS vector index
 index, texts = build_index(catalog)

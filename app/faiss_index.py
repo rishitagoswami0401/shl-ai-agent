@@ -1,28 +1,38 @@
 import faiss
 import numpy as np
-from sentence_transformers import SentenceTransformer
+from sklearn.feature_extraction.text import TfidfVectorizer
 
-model = SentenceTransformer("all-MiniLM-L6-v2")
+texts = []
+vectorizer = TfidfVectorizer()
 
 def build_index(catalog):
+    global texts
 
-    texts = []
+    texts = [
+        item["name"] + " " + item.get("description", "")
+        for item in catalog
+    ]
 
-    for item in catalog:
+    vectors = vectorizer.fit_transform(texts).toarray()
 
-        text = (
-            item.get("name", "") + " " +
-            item.get("description", "")
-        )
-
-        texts.append(text)
-
-    embeddings = model.encode(texts)
-
-    dimension = embeddings.shape[1]
+    dimension = vectors.shape[1]
 
     index = faiss.IndexFlatL2(dimension)
+    index.add(np.array(vectors).astype("float32"))
 
-    index.add(np.array(embeddings).astype("float32"))
+    return index
 
-    return index, texts
+def search_index(query, index, catalog, top_k=5):
+    query_vector = vectorizer.transform([query]).toarray()
+
+    distances, indices = index.search(
+        np.array(query_vector).astype("float32"),
+        top_k
+    )
+
+    results = []
+
+    for idx in indices[0]:
+        results.append(catalog[idx])
+
+    return results
