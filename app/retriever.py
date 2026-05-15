@@ -17,6 +17,7 @@ embeddings = model.encode(texts)
 dimension = embeddings.shape[1]
 
 index = faiss.IndexFlatL2(dimension)
+
 index.add(np.array(embeddings).astype("float32"))
 
 def search_assessments(query, top_k=5):
@@ -31,6 +32,7 @@ def search_assessments(query, top_k=5):
     results = []
 
     for idx in indices[0]:
+
         results.append({
             "name": catalog[idx]["name"],
             "url": catalog[idx]["url"],

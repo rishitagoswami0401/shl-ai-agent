@@ -2,6 +2,8 @@ fastapi
 uvicorn
 requests
 pydantic
-faiss-cpu
 numpy
-scikit-learn
+faiss-cpu
+sentence-transformers
+torch
+transformers
